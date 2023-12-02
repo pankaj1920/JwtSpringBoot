@@ -1,24 +1,23 @@
-package com.example.jwtauth.model.entities;
+package com.jwt.schema;
 
-import lombok.AllArgsConstructor;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-@Table(name = "users")
 @Getter
 @Setter
-@Entity
 @NoArgsConstructor
-
+@AllArgsConstructor
+@ToString
+@Entity
+@Table(name = "user_table")
 public class UserSchema implements UserDetails {
+
     @Id
-    private String userId;
+    private String id;
     private String name;
     private String email;
     private String password;
@@ -31,7 +30,7 @@ public class UserSchema implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.email;
+        return email;
     }
 
     @Override

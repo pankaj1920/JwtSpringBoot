@@ -1,11 +1,11 @@
-package com.example.jwtauth.controller;
+package com.jwt.controller;
 
-import com.example.jwtauth.config.security.JwtHelper;
-import com.example.jwtauth.model.entities.UserSchema;
-import com.example.jwtauth.model.jwt.JwtRequest;
-import com.example.jwtauth.model.jwt.JwtResponse;
-import com.example.jwtauth.repo.UserRepo;
-import com.example.jwtauth.service.UserService;
+import com.jwt.jwt.JwtHelper;
+import com.jwt.model.JwtRequest;
+import com.jwt.model.JWTResponse;
+import com.jwt.repositories.UserRepo;
+import com.jwt.schema.UserSchema;
+import com.jwt.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -28,52 +29,46 @@ public class AuthController {
     @Autowired
     private AuthenticationManager manager;
 
+    @Autowired
+    JwtHelper helper;
 
     @Autowired
-    private JwtHelper helper;
-
-    @Autowired
-    private UserService userService;
+    UserService userService;
 
     private Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request) {
-
+    public ResponseEntity<JWTResponse> login(@RequestBody JwtRequest request) {
         this.doAuthenticate(request.getEmail(), request.getPassword());
-
-
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
         String token = this.helper.generateToken(userDetails);
-
-        JwtResponse response = JwtResponse.builder()
+        JWTResponse jwtResponse = JWTResponse.builder()
                 .jwtToken(token)
                 .userName(userDetails.getUsername()).build();
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(jwtResponse, HttpStatus.OK);
     }
 
     private void doAuthenticate(String email, String password) {
-
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, password);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
         try {
-            manager.authenticate(authentication);
 
+            manager.authenticate(authenticationToken);
 
         } catch (BadCredentialsException e) {
-            throw new BadCredentialsException(" Invalid Username or Password  !!");
+            throw new BadCredentialsException("Invalid Username password");
         }
-
     }
 
+
+
     @ExceptionHandler(BadCredentialsException.class)
-    public String exceptionHandler() {
-        return "Credentials Invalid !!";
+    private String exceptionHandler(){
+        return "Credential Invalid";
     }
 
     @PostMapping("/create_user")
+    public UserSchema createUser(@RequestBody UserSchema userRequest){
 
-    public UserSchema createUser(@RequestBody UserSchema userSchema){
-        UserSchema user = this.userService.createUser(userSchema);
-        return user;
+        return userService.createUser(userRequest);
     }
 }

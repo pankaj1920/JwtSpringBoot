@@ -1,8 +1,7 @@
-package com.example.jwtauth.controller;
+package com.jwt.controller;
 
-import com.example.jwtauth.model.User;
-import com.example.jwtauth.service.UserService;
-import lombok.Getter;
+import com.jwt.schema.UserSchema;
+import com.jwt.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,12 +15,19 @@ import java.util.List;
 public class HomeController {
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
+    @GetMapping("/users")
+    public List<UserSchema> getUser(){
 
+        System.out.println("Getting current user");
 
-    @GetMapping("/getLoginUser")
-    public String getLoginUser(Principal principal){
+        return userService.getUser();
+    }
+
+    @GetMapping("/current_user")
+    public String getLoggedInUser(Principal principal){
+
         return principal.getName();
     }
 }

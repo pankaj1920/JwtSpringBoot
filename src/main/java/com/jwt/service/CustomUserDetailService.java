@@ -1,7 +1,7 @@
-package com.example.jwtauth.service;
+package com.jwt.service;
 
-import com.example.jwtauth.model.entities.UserSchema;
-import com.example.jwtauth.repo.UserRepo;
+import com.jwt.repositories.UserRepo;
+import com.jwt.schema.UserSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,8 +16,11 @@ public class CustomUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // load user form data base
-        UserSchema userSchema = this.userRepo.findByEmail(username).orElseThrow(() -> new RuntimeException("User not found"));
+        //load user from database
+
+      UserSchema userSchema =  userRepo.findByEmail(username).orElseThrow(() -> new RuntimeException("User not found"));
+
+
         return userSchema;
     }
 }
